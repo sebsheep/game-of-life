@@ -351,10 +351,10 @@ updateGrid msg grid =
 
                 newPixels =
                     Set.fromList
-                        (List.map2 Tuple.pair (List.range 1 size) (List.range 1 size)
+                        (List.map2 Tuple.pair (List.range 0 (size - 1)) (List.range 0 (size - 1))
                             ++ List.map2 Tuple.pair
-                                (List.range 1 size)
-                                (List.range 1 size |> List.reverse)
+                                (List.range 0 (size - 1))
+                                (List.range 0 (size - 1) |> List.reverse)
                         )
             in
             { grid | activeSet = Set.union newPixels grid.activeSet }
