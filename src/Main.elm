@@ -12,6 +12,7 @@ import Html.Attributes as Attributes
         , href
         , property
         , style
+        , title
         , width
         )
 import Html.Events exposing (onClick, onInput)
@@ -141,10 +142,15 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     let
-        buttonGrid : MsgGrid -> String -> Html Msg
-        buttonGrid msgGrid label =
-            button [ onClick <| MsgGrid msgGrid, disabled model.gameRunning ]
-                [ text label ]
+        buttonGrid : MsgGrid -> String -> String -> Html Msg
+        buttonGrid msgGrid iconName alt =
+            button
+                [ onClick <| MsgGrid msgGrid
+                , disabled model.gameRunning
+                , class "btn btn-primary"
+                , title alt
+                ]
+                [ icon iconName ]
     in
     div []
         [ div
@@ -186,22 +192,25 @@ view model =
                 ]
                 []
             , br [] []
-            , buttonGrid VertSym "Vertical reverse"
-            , buttonGrid HorizSym "Horizontal reverse"
-            , buttonGrid Reduce "Reduce"
+            , br [] []
+            , buttonGrid VertSym "arrows-v" "Vertical revert"
+            , buttonGrid HorizSym "arrows-h" "Hozizontal revert"
+            , buttonGrid Reduce "compress" "Reduce size"
+            , br [] []
             , br [] []
             , text "Draw: "
-            , buttonGrid DrawCross "Cross"
-            , buttonGrid DrawSmile "Smile"
-            , buttonGrid DrawConwayGun "Gosper glide gun"
+            , buttonGrid DrawCross "times" "Cross"
+            , buttonGrid DrawSmile "smile-o" "Smile"
+            , buttonGrid DrawConwayGun "fighter-jet" "Gosper glide gun"
+            , br [] []
             , br [] []
             , text "Game of Life: "
-            , buttonGrid ConwaysStep "Step"
+            , buttonGrid ConwaysStep "forward" "Step"
             , if model.gameRunning then
-                button [ onClick StopGame ] [ text "Stop" ]
+                button [ onClick StopGame, class "btn btn-warning", title "Pause" ] [ icon "pause" ]
 
               else
-                button [ onClick LauchGame ] [ text "Launch" ]
+                button [ onClick LauchGame, class "btn btn-success", title "Play" ] [ icon "play" ]
             , text "Pause between each step:"
             , input
                 [ attribute "type" "number"
@@ -211,8 +220,14 @@ view model =
                 ]
                 []
             , br [] []
-            , button [ onClick PopGrid, disabled model.gameRunning ] [ text "Cancel" ]
-            , buttonGrid Clear "Clear"
+            , button [ onClick PopGrid, disabled model.gameRunning, class "btn btn-primary" ] [ icon "undo" ]
+            , button
+                [ onClick <| MsgGrid Clear
+                , disabled model.gameRunning
+                , class "btn btn-danger"
+                , title "Clear the grid"
+                ]
+                [ icon "eraser" ]
             ]
         , br [] []
         , div [] [ Html.map MsgGrid <| viewGrid model.currentGrid ]
@@ -239,6 +254,11 @@ viewGrid grid =
                 )
     in
     table [ class "grid" ] (List.map row <| List.range 0 (grid.height - 1))
+
+
+icon : String -> Html msg
+icon name =
+    span [ class <| "fa fa-" ++ name ] []
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
